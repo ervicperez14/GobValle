@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">GobValle</string>
+    <string name="server">http://qa-pidame.nexura.com/</string>
+    <string name="title_activity_testdrawer">TESTDRAWER</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+</resources>

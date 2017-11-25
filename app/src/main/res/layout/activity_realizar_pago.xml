@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.ervic.mac.gobvalle.Principal.Pagos">
+    <WebView
+        android:id="@+id/webView_pago"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/app_bar"
+            android:theme="@style/AppBarOverlay"
+            android:layout_alignParentTop="true"
+            >
+
+            <android.support.v7.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="?attr/actionBarSize"
+                android:background="@color/azul"
+                android:id="@+id/toolbar"
+                android:theme="@style/AppBarOverlay">
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="5dp"
+                    android:paddingBottom="5dp"
+                    android:paddingLeft="5dp"
+                    android:paddingTop="5dp"
+                    android:orientation="horizontal"
+                    >
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="10dp"
+                        android:id="@+id/back"
+                        >
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:tint="@color/white"
+                            android:id="@+id/btn_back"
+                            android:src="@drawable/ic_arrow_back_black_24dp"/>
+
+                    </LinearLayout>
+                    <ImageView
+                        android:layout_width="170dp"
+                        android:foregroundGravity="left"
+                        android:layout_gravity="start"
+                        android:layout_toRightOf="@+id/back"
+                        android:layout_centerVertical="true"
+                        android:layout_height="35dp"
+                        android:background="@drawable/logo_horizontal"
+                        android:id="@+id/btn_title"/>
+
+                </RelativeLayout>
+            </android.support.v7.widget.Toolbar>
+
+        </android.support.design.widget.AppBarLayout>
+        <WebView
+            android:layout_below="@id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_above="@+id/bottomnavigationview"
+            android:id="@+id/_webview">
+
+        </WebView>
+        <android.support.design.widget.BottomNavigationView
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:background="@color/white"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/bottomnavigationview"
+            />
+    </RelativeLayout>
+
+</android.support.constraint.ConstraintLayout>
