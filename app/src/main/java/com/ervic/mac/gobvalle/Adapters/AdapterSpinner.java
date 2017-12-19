@@ -24,6 +24,7 @@ public class AdapterSpinner extends BaseAdapter {
     public AdapterSpinner(Context context, List<Types> types) {
         this.context = context;
         this.types = types;
+        this.inflater = (LayoutInflater.from(context));
     }
 
     @Override
@@ -50,12 +51,13 @@ public class AdapterSpinner extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View view = inflater.inflate(R.layout.spinner_item_request, null);
-        TextView tv_request = (TextView)view.findViewById(R.id.tv_request);
-        TextView tv_value = (TextView) view.findViewById(R.id.tv_value);
-        tv_request.setText(types.get(position).getLabel());
-        tv_value.setText(types.get(position).getValue());
 
-        return view;
+        convertView = inflater.inflate(R.layout.spinner_item_request, null);
+        TextView tv_request = (TextView)convertView.findViewById(R.id.tv_request);
+        TextView tv_value = (TextView) convertView.findViewById(R.id.tv_value);
+        tv_request.setText(types.get(position).getLabel());
+        tv_value.setText(String.valueOf(types.get(position).getValue()));
+
+        return convertView;
     }
 }

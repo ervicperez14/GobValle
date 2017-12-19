@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg"
     tools:context="com.ervic.mac.gobvalle.Principal.Registrarse">
     <RelativeLayout
         android:layout_width="match_parent"
@@ -81,6 +82,8 @@
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:errorTextAppearance="@style/error_appearance"
+            app:errorEnabled="true"
             android:id="@+id/container_numid">
             <EditText
                 android:layout_width="match_parent"
@@ -92,36 +95,55 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:text="Fecha de pago:"/>
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:errorTextAppearance="@style/error_appearance"
+            app:errorEnabled="true"
             android:id="@+id/container_fechapago">
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/fechapago"
                 android:background="@drawable/borde_edittext"
+                android:inputType="date"
+                android:focusable="false"
+                android:clickable="true"
+                android:maxLines="1"
                 />
         </android.support.design.widget.TextInputLayout>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Tipo de solicitud:"/>
-        <Spinner
+            android:text="Tipo de solicitud:"
+            android:layout_marginBottom="10dp"/>
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/_spinnerRequest" />
+            android:background="@drawable/borde_edittext"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/_spinnerRequest" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"/>
+        </LinearLayout>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:text="Número del teléfono o móvil:"/>
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:errorTextAppearance="@style/error_appearance"
+            app:errorEnabled="true"
             android:id="@+id/container_telefono">
             <EditText
                 android:layout_width="match_parent"
@@ -133,11 +155,12 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:text="Correo electrónico: "/>
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:errorTextAppearance="@style/error_appearance"
+            app:errorEnabled="true"
             android:id="@+id/container_correo">
             <EditText
                 android:id="@+id/correo"
@@ -150,8 +173,8 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:text="Enviar"
+            android:text="Registrarse"
+            android:id="@+id/btn_enviar"
             android:background="@color/azul"
             android:textColor="@color/white"
             />

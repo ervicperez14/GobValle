@@ -38,6 +38,7 @@ public class Pagos extends AppCompatActivity implements BottomNavigationView.OnN
             }
         });
         WebView webViewPago = (WebView)findViewById(R.id._webview);
+        webViewPago.getSettings().setJavaScriptEnabled(true);
         webViewPago.loadUrl("https://www.abcpagos.com/pasaportes_valle/");
 
         final Menu menu = bottomNavigationView.getMenu();
@@ -46,7 +47,7 @@ public class Pagos extends AppCompatActivity implements BottomNavigationView.OnN
         for(i = 0; i < MyApplication.getData().bottomMenu.size(); i++) {
             final int aux = i;
             Log.e("ENTRO",MyApplication.getData().bottomMenu.get(aux).title);
-            Picasso.with(this).load(getResources().getString(R.string.server) + MyApplication.getData().bottomMenu.get(i).icon).placeholder(getResources().getDrawable(R.drawable.ic_launcher_background)).into(new com.squareup.picasso.Target() {
+            Picasso.with(this).load(MyApplication.getData().bottomMenu.get(i).icon).placeholder(getResources().getDrawable(R.drawable.ic_launcher_background)).into(new com.squareup.picasso.Target() {
                 @Override
                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                     Drawable drawable = new BitmapDrawable(getResources(), bitmap);
@@ -61,8 +62,8 @@ public class Pagos extends AppCompatActivity implements BottomNavigationView.OnN
 
                 @Override
                 public void onPrepareLoad(Drawable placeHolderDrawable) {
-                    menu.add(Menu.NONE, aux, Menu.NONE, MyApplication.getData().bottomMenu.get(aux).title).setIcon(placeHolderDrawable).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-                    Log.e("ENTRO",MyApplication.getData().bottomMenu.get(aux).title);
+                    //menu.add(Menu.NONE, aux, Menu.NONE, MyApplication.getData().bottomMenu.get(aux).title).setIcon(placeHolderDrawable).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+                    //Log.e("ENTRO",MyApplication.getData().bottomMenu.get(aux).title);
                 }
             });
         }
@@ -116,5 +117,12 @@ public class Pagos extends AppCompatActivity implements BottomNavigationView.OnN
 
 
 
+    @Override
+    public void onBackPressed(){
+
+        Intent intent = new Intent(Pagos.this,MainActivity.class);
+        finish();
+        startActivity(intent);
+    }
 
 }

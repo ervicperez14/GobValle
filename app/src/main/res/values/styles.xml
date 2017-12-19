@@ -16,6 +16,10 @@
 
 
     </style>
+    <style name="error_appearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/redError</item>
+        <item name="android:textSize">12sp</item>
+    </style>
 
 
     <style name="PopupMenu" parent="ThemeOverlay.AppCompat.Dark">
@@ -59,4 +63,10 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="bottomnavigation" parent="Widget.Design.BottomNavigationView">
+
+        <item name="colorPrimary">#757575</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
 </resources>

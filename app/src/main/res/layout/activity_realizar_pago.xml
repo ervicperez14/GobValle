@@ -82,6 +82,7 @@
             android:background="@color/white"
             android:layout_alignParentBottom="true"
             android:id="@+id/bottomnavigationview"
+            android:theme="@style/bottomnavigation"
             />
     </RelativeLayout>
 

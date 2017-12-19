@@ -35,24 +35,43 @@
                 android:paddingTop="5dp"
                 android:orientation="horizontal"
                 >
+                <LinearLayout
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:id="@+id/ly_btn_back"
+                    android:visibility="gone"
+                    android:layout_marginRight="8dp">
+                    <ImageView
+                        android:id="@+id/btn_back"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:tint="@color/white"
+                        android:visibility="gone"
+                        android:src="@drawable/ic_arrow_back_black_24dp" />
+                </LinearLayout>
                 <ImageView
                     android:layout_width="170dp"
                     android:foregroundGravity="left"
                     android:layout_gravity="start"
                     android:layout_height="35dp"
+                    android:layout_toRightOf="@+id/ly_btn_back"
                     android:background="@drawable/logo_horizontal"
-                    android:id="@+id/btn_back"/>
+                    android:id="@+id/logo_horizontal"/>
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
+                android:id="@+id/ly_opcion"
                 android:layout_marginRight="8dp">
                 <ImageView
                     android:id="@+id/opcion"
                     android:layout_width="25dp"
                     android:layout_height="8dp"
+                    android:layout_gravity="center"
                     android:background="@drawable/ico_menu" />
             </LinearLayout>
             </RelativeLayout>
@@ -86,6 +105,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:id="@+id/container_realizarpago"
                 android:layout_alignParentLeft="true"
 
                 >
@@ -108,6 +128,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
+                android:id="@+id/container_registro"
                 android:orientation="vertical">
                 <ImageButton
                     android:layout_width="70dp"
@@ -228,31 +249,78 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:layout_marginRight="40dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="15dp"
+        android:background="@drawable/bg"
         android:visibility="gone"
         android:orientation="vertical"
         android:layout_below="@+id/app_bar"
         android:id="@+id/container_recycler"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_marginTop="10dp"
+            android:textStyle="bold"
+            android:text="MÁS INFORMACIÓN"
+            android:gravity="center_horizontal"
+            android:id="@+id/titulo"/>
+        <android.support.v7.widget.RecyclerView
+            android:layout_marginRight="40dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginTop="15dp"
+            android:layout_below="@+id/titulo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/recycler_menulateral"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:visibility="gone"
+        android:orientation="vertical"
+        android:layout_below="@+id/app_bar"
+        android:id="@+id/container_scareservices"
         android:background="@drawable/bg"
         >
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="18sp"
+            android:layout_marginTop="15dp"
             android:textStyle="bold"
-            android:text="MÁS INFORMACIÓN"
+            android:text="SERVICIOS DE ATENCIÓN"
             android:gravity="center_horizontal"
-            android:layout_below="@+id/app_bar"
-            android:id="@+id/titulo"/>
+            android:id="@+id/titulo_scare"/>
+
         <android.support.v7.widget.RecyclerView
-            android:layout_marginTop="10dp"
-            android:layout_below="@+id/titulo"
+            android:layout_marginRight="40dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginTop="15dp"
+            android:layout_below="@+id/titulo_scare"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/recycler_menulateral"/>
+            android:id="@+id/recycler_scare"/>
     </LinearLayout>
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/app_bar"
+        android:visibility="gone"
+        layout="@layout/content_perfil"
+        android:id="@+id/layout_perfil"
+        />
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/app_bar"
+        android:visibility="gone"
+        layout="@layout/content_login"
+        android:id="@+id/layout_login"
+        />
+
 </RelativeLayout>
     <ImageView
         android:layout_width="160dp"
@@ -269,5 +337,6 @@
         android:background="@color/white"
         android:layout_alignParentBottom="true"
         android:id="@+id/bottomnavigationview"
+        android:theme="@style/bottomnavigation"
        />
 </RelativeLayout>

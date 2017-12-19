@@ -68,7 +68,8 @@
             android:layout_below="@id/app_bar"
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
-            android:id="@+id/_webview">
+            android:layout_above="@+id/bottomnavigationview"
+            android:id="@+id/web_reprogramar">
 
         </WebView>
         <android.support.design.widget.BottomNavigationView
@@ -77,6 +78,7 @@
             android:background="@color/white"
             android:layout_alignParentBottom="true"
             android:id="@+id/bottomnavigationview"
+            android:theme="@style/bottomnavigation"
             />
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

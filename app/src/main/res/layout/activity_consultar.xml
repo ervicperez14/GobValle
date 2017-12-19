@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg"
     tools:context="com.ervic.mac.gobvalle.Principal.Consultar">
     <RelativeLayout
         android:layout_width="match_parent"
@@ -98,7 +99,7 @@
                     android:layout_width="70dp"
                     android:layout_height="70dp"
                     android:layout_gravity="center_horizontal"
-                    android:background="@drawable/icono_buscar"
+                    android:background="@drawable/consultar_cita"
                     android:id="@+id/consultar_cita"
                     />
                 <TextView
@@ -127,7 +128,7 @@
                     android:layout_width="70dp"
                     android:layout_height="70dp"
                     android:layout_gravity="center_horizontal"
-                    android:background="@drawable/icono_buscar"
+                    android:background="@drawable/consultar_pagos"
                     android:id="@+id/consultar_pago"
                     />
                 <TextView
@@ -156,7 +157,7 @@
                     android:layout_width="70dp"
                     android:layout_height="70dp"
                     android:layout_gravity="center_horizontal"
-                    android:background="@drawable/icono_buscar"
+                    android:background="@drawable/consultar_pasaporte"
                     android:id="@+id/consultar_pasaporte"
                     />
                 <TextView
@@ -172,20 +173,15 @@
 
 
     </LinearLayout>
-        <ImageView
-            android:layout_width="160dp"
-            android:layout_height="40dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="10dp"
-            android:scaleType="centerCrop"
-            android:background="@drawable/gobernacion_valle_logo"
-            android:layout_above="@+id/bottomnavigationview"/>
+
             <android.support.design.widget.BottomNavigationView
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:background="@color/white"
                 android:layout_alignParentBottom="true"
                 android:id="@+id/bottomnavigationview"
+                android:theme="@style/bottomnavigation"
+
                 />
         </RelativeLayout>
 

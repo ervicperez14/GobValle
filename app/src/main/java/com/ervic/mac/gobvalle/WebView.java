@@ -16,10 +16,15 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
+import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.ervic.mac.gobvalle.Application.MyApplication;
+import com.ervic.mac.gobvalle.Principal.Pagos;
+import com.squareup.okhttp.OkHttpClient;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
@@ -27,7 +32,12 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+
 import android.util.Base64;
+
+import org.apache.http.client.ClientProtocolException;
 
 public class WebView extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
     ImageView btn_back;
@@ -41,17 +51,20 @@ public class WebView extends AppCompatActivity implements BottomNavigationView.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_view);
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomnavigationview);
 
         myWebView = (android.webkit.WebView) findViewById(R.id._webview);
         int item = getIntent().getIntExtra("item",0);
+        String url = getIntent().getStringExtra("url");
+
         progress = new ProgressDialog(this);
         btn_back = (ImageView) findViewById(R.id.btn_back);
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(WebView.this,MainActivity.class);
-                startActivity(intent);
                 finish();
+                startActivity(intent);
             }
         });
 
@@ -62,20 +75,18 @@ public class WebView extends AppCompatActivity implements BottomNavigationView.O
         progress.setCancelable(false);
         progress.setIndeterminate(true);
         progress.show();
-        String url = MyApplication.getData().bottomMenu.get(item).link;
-        myWebView.loadUrl(url);
+        myWebView.setWebViewClient(getWebViewClient());
+        myWebView.loadUrl(url,getCustomHeaders());
         myWebView.getSettings().setJavaScriptEnabled(true);
-        myWebView.getSettings().setUserAgentString("Mozilla/5.0 (iPhone; U; CPU like Mac OS X; en) AppleWebKit/420+ (KHTML, like Gecko) Version/3.0 Mobile/1A543a Safari/419.3");
         cancelProgress();
 
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomnavigationview);
         final Menu menu = bottomNavigationView.getMenu();
         int i = 0;
 
         for(i = 0;i < MyApplication.getData().bottomMenu.size();i++) {
             final int aux = i;
             Log.e("ENTRO",MyApplication.getData().bottomMenu.get(aux).title);
-            Picasso.with(this).load(getResources().getString(R.string.server) + MyApplication.getData().bottomMenu.get(i).icon).placeholder(getResources().getDrawable(R.drawable.ic_launcher_background)).into(new com.squareup.picasso.Target() {
+            Picasso.with(this).load(MyApplication.getData().bottomMenu.get(i).icon).placeholder(getResources().getDrawable(R.drawable.ic_launcher_background)).into(new com.squareup.picasso.Target() {
                 @Override
                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                     Drawable drawable = new BitmapDrawable(getResources(), bitmap);
@@ -90,14 +101,15 @@ public class WebView extends AppCompatActivity implements BottomNavigationView.O
 
                 @Override
                 public void onPrepareLoad(Drawable placeHolderDrawable) {
-                    menu.add(Menu.NONE, aux, Menu.NONE, MyApplication.getData().bottomMenu.get(aux).title).setIcon(placeHolderDrawable).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-                    Log.e("ENTRO",MyApplication.getData().bottomMenu.get(aux).title);
+                    //menu.add(Menu.NONE, aux, Menu.NONE, MyApplication.getData().bottomMenu.get(aux).title).setIcon(placeHolderDrawable).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+                    //Log.e("ENTRO",MyApplication.getData().bottomMenu.get(aux).title);
                 }
             });
         }
         bottomNavigationView.invalidate();
         BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
+        bottomNavigationView.getMenu().getItem(item).setChecked(true);
 
 
 
@@ -114,39 +126,28 @@ public class WebView extends AppCompatActivity implements BottomNavigationView.O
 
         switch (item.getItemId()) {
             case 0: {
-                progress.show();
                 String url = MyApplication.getData().bottomMenu.get(0).link;
-                myWebView.loadUrl(url);
                 myWebView.getSettings().setJavaScriptEnabled(true);
-                myWebView.getSettings().setUserAgentString("Mozilla/5.0 (iPhone; U; CPU like Mac OS X; en) AppleWebKit/420+ (KHTML, like Gecko) Version/3.0 Mobile/1A543a Safari/419.3");
-                cancelProgress();
+                myWebView.loadUrl(url,getCustomHeaders());
             }
             break;
             case 1: {
-                progress.show();
                 String url = MyApplication.getData().bottomMenu.get(1).link;
-                myWebView.loadUrl(url);
                 myWebView.getSettings().setJavaScriptEnabled(true);
-                myWebView.getSettings().setUserAgentString("Mozilla/5.0 (iPhone; U; CPU like Mac OS X; en) AppleWebKit/420+ (KHTML, like Gecko) Version/3.0 Mobile/1A543a Safari/419.3");
-                cancelProgress();
+                myWebView.loadUrl(url,getCustomHeaders());
             }
             break;
             case 2: {
-                progress.show();
                 String url = MyApplication.getData().bottomMenu.get(2).link;
-                myWebView.loadUrl(url);
                 myWebView.getSettings().setJavaScriptEnabled(true);
-                myWebView.getSettings().setUserAgentString("Mozilla/5.0 (iPhone; U; CPU like Mac OS X; en) AppleWebKit/420+ (KHTML, like Gecko) Version/3.0 Mobile/1A543a Safari/419.3");
-                cancelProgress();
+                myWebView.loadUrl(url,getCustomHeaders());
             }
             break;
             case 3: {
-                progress.show();
                 String url = MyApplication.getData().bottomMenu.get(3).link;
-                myWebView.loadUrl(url);
                 myWebView.getSettings().setJavaScriptEnabled(true);
-                myWebView.getSettings().setUserAgentString("Mozilla/5.0 (iPhone; U; CPU like Mac OS X; en) AppleWebKit/420+ (KHTML, like Gecko) Version/3.0 Mobile/1A543a Safari/419.3");
-                cancelProgress();
+                myWebView.loadUrl(url,getCustomHeaders());
+
             }
             break;
         }
@@ -159,7 +160,7 @@ public class WebView extends AppCompatActivity implements BottomNavigationView.O
                 try{
 
 
-                    sleep(3000);
+                    sleep(2000);
                 }
                 catch (Exception e){
                     e.printStackTrace();
@@ -170,6 +171,43 @@ public class WebView extends AppCompatActivity implements BottomNavigationView.O
             }
         };
         timerTread.start();
+    }
+    private Map<String, String> getCustomHeaders()
+    {
+        Map<String, String> headers = new HashMap<>();
+            headers.put("nx-bodycss", "app-design");
+            return headers;
+
+    }
+    @Override
+    public void onBackPressed(){
+
+        Intent intent = new Intent(WebView.this,MainActivity.class);
+        finish();
+        startActivity(intent);
+    }
+    private WebViewClient getWebViewClient()
+    {
+
+        return new WebViewClient()
+        {
+
+            @Override
+            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+            public boolean shouldOverrideUrlLoading(android.webkit.WebView view, WebResourceRequest request)
+            {
+                view.loadUrl(request.getUrl().toString(), getCustomHeaders());
+
+                return true;
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(android.webkit.WebView view, String url)
+            {
+                view.loadUrl(url, getCustomHeaders());
+                return true;
+            }
+        };
     }
 
 }
