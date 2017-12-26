@@ -5,5 +5,6 @@ package com.ervic.mac.gobvalle.Models;
  */
 
 public class ResponseVerificaPago {
+    public Error error;
     public DataPago data;
 }

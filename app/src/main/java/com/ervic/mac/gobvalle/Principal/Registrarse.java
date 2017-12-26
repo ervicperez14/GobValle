@@ -11,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -28,20 +29,29 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.HttpException;
 import com.ervic.mac.gobvalle.API.MyApiService;
 import com.ervic.mac.gobvalle.Adapters.AdapterSpinner;
 import com.ervic.mac.gobvalle.Application.MyApplication;
 import com.ervic.mac.gobvalle.BottomNavigationViewHelper;
 import com.ervic.mac.gobvalle.MainActivity;
 import com.ervic.mac.gobvalle.Models.DataUser;
+import com.ervic.mac.gobvalle.Models.ErrorResponse;
 import com.ervic.mac.gobvalle.Models.ResponseVerificaPago;
 import com.ervic.mac.gobvalle.Models.Types;
+import com.ervic.mac.gobvalle.Models.Error;
 import com.ervic.mac.gobvalle.PreferenciasGobvalle;
 import com.ervic.mac.gobvalle.R;
 import com.ervic.mac.gobvalle.DataBase.*;
 import com.ervic.mac.gobvalle.WebView;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -150,6 +160,7 @@ public class Registrarse extends AppCompatActivity {
                     pago.enqueue(new Callback<ResponseVerificaPago>() {
                         @Override
                         public void onResponse(Call<ResponseVerificaPago> call, Response<ResponseVerificaPago> response) {
+                            Log.e("Probando","jeje");
                             if(response.isSuccessful()){
                                 Log.e("STATUS",response.body().data.message);
                                 progress_enviar.dismiss();
@@ -182,7 +193,8 @@ public class Registrarse extends AppCompatActivity {
                                 Intent intent = new Intent(Registrarse.this,MainActivity.class);
                                 startActivity(intent);
 
-                            }else{
+                            }else if(response.code() == 1){
+                                Log.e("entro","probando");
                                 android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(Registrarse.this);
                                 LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                                 View dialoglayout = inflater.inflate(R.layout.alert_result,null);
@@ -193,15 +205,15 @@ public class Registrarse extends AppCompatActivity {
                                 tv_mensaje.setText(response.body().data.message);
                                 builder.show();
                             }
-
                             _adminDB.close();
 
                         }
 
                         @Override
                         public void onFailure(Call<ResponseVerificaPago> call, Throwable t) {
-
+                            Snackbar.make(findViewById(R.id.btn_enviar),"El pago no se he realizado",Snackbar.LENGTH_LONG).show();
                         }
+
                     });
 
 
@@ -218,7 +230,16 @@ public class Registrarse extends AppCompatActivity {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 // +1 because january is zero
-                final String selectedDate = day + "/" + (month+1) + "/" + year;
+                //Correcciones
+                String dia = String.valueOf(day);
+                String mes = String.valueOf(month+1);
+                String año = String.valueOf(year);
+
+                if(dia.length()<2)
+                    dia = "0"+dia;
+                if(mes.length()<2)
+                    mes = "0"+mes;
+                final String selectedDate = dia + "/" + (mes) + "/" + año;
                 et_fecha.setText(selectedDate);
             }
         });

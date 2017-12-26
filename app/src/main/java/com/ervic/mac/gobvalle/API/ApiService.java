@@ -2,6 +2,7 @@ package com.ervic.mac.gobvalle.API;
 
 import com.ervic.mac.gobvalle.Models.MenuResponse;
 import com.ervic.mac.gobvalle.Models.RequestTypeResponse;
+import com.ervic.mac.gobvalle.Models.ResponseProcess;
 import com.ervic.mac.gobvalle.Models.ResponseToken;
 import com.ervic.mac.gobvalle.Models.ResponseVerificaPago;
 
@@ -34,4 +35,7 @@ public interface ApiService {
     Call<ResponseToken> getTokenSystem(@Field("login")String login,
                                        @Field("password")String password);
 
+    @FormUrlEncoded
+    @POST("pasaporte/consult")
+    Call<ResponseProcess> setOptionPasaporte(@Field("fecha_pago") String fecha_pago, @Field("identificacion") String identificacion, @Field("process") String process);
 }

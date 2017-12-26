@@ -1,5 +1,6 @@
 package com.ervic.mac.gobvalle.Principal;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -51,17 +52,18 @@ public class TestCancelar extends AppCompatActivity implements BottomNavigationV
     private int _firsttime = 0;
     private AdvancedWebView webview;
     BottomNavigationView bottomNavigationView;
-    private android.webkit.WebView web_cancelar;
+    private AdvancedWebView web_cancelar;
     private String TAG_LOGGED = "LOGGED";
     private PreferenciasGobvalle my_preferences;
     private String url = "http://qa-pidame.nexura.com/loader.php?lServicio=Pasaporte&lFuncion=consult&tipo=1";
 
+    @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cancelar);
         progress = new ProgressDialog(this);
-        web_cancelar = (android.webkit.WebView) findViewById(R.id.web_cancelar);
+        web_cancelar = (AdvancedWebView) findViewById(R.id.web_cancelar);
         my_preferences = new PreferenciasGobvalle(this);
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomnavigationview);
         ImageView btn_back = (ImageView)findViewById(R.id.btn_back);
@@ -73,7 +75,7 @@ public class TestCancelar extends AppCompatActivity implements BottomNavigationV
                 startActivity(intent);
             }
         });
-
+        web_cancelar.addHttpHeader("nx-bodycss", "app-design");
         WebSettings settings = web_cancelar.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
@@ -83,11 +85,12 @@ public class TestCancelar extends AppCompatActivity implements BottomNavigationV
         settings.setBuiltInZoomControls(false);
         settings.setPluginState(WebSettings.PluginState.ON);
         web_cancelar.setWebChromeClient(new MyWebChromeClient(this));
+        web_cancelar.setWebViewClient(getWebViewClient());
 
         settings.setUserAgentString("user-agent-string");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-
+        web_cancelar.loadUrl(url,true);
         isLogged();
 
         final Menu menu = bottomNavigationView.getMenu();
@@ -267,6 +270,7 @@ public class TestCancelar extends AppCompatActivity implements BottomNavigationV
                 try {
 
                     URL urlObject = new URL(url);
+                    web_cancelar.loadUrl(url,getHeader());
                     Log.e("MyURL",url);
                     HttpURLConnection con = (HttpURLConnection) urlObject.openConnection();
 

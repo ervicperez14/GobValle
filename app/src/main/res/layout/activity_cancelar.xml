@@ -65,14 +65,14 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <WebView
+        <im.delight.android.webview.AdvancedWebView
             android:layout_below="@id/app_bar"
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:layout_above="@+id/bottomnavigationview"
             android:id="@+id/web_cancelar">
 
-        </WebView>
+        </im.delight.android.webview.AdvancedWebView>
 
         <android.support.design.widget.BottomNavigationView
             android:layout_width="match_parent"
