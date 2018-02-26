@@ -2,6 +2,7 @@ package com.ervic.mac.gobvalle.API;
 
 import com.ervic.mac.gobvalle.Models.MenuResponse;
 import com.ervic.mac.gobvalle.Models.RequestTypeResponse;
+import com.ervic.mac.gobvalle.Models.ResponseCancel;
 import com.ervic.mac.gobvalle.Models.ResponseProcess;
 import com.ervic.mac.gobvalle.Models.ResponseToken;
 import com.ervic.mac.gobvalle.Models.ResponseVerificaPago;
@@ -32,10 +33,15 @@ public interface ApiService {
 
     @FormUrlEncoded
     @POST("usuarios/login?movil=1")
-    Call<ResponseToken> getTokenSystem(@Field("login")String login,
-                                       @Field("password")String password);
+    Call<ResponseToken> getTokenSystem(@Field("login")String login, @Field("password")String password);
 
     @FormUrlEncoded
-    @POST("pasaporte/consult")
-    Call<ResponseProcess> setOptionPasaporte(@Field("fecha_pago") String fecha_pago, @Field("identificacion") String identificacion, @Field("process") String process);
+    @POST("Pasaporte/consult")
+    Call<ResponseProcess> setOptionPasaporte(@Field("fecha_pago") String fecha_pago, @Field("identificacion") String identificacion, @Field("process") String process, @Header("nxtoken") String nxtoken);
+
+    @FormUrlEncoded
+    @POST("Pasaporte/cancelAppointment")
+    Call<ResponseCancel> cancel(@Field("id") String id_cita, @Field("description") String description, @Header("nxtoken") String nxtoken);
+
+
 }

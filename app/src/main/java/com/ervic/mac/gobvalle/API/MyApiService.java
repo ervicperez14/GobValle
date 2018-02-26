@@ -25,7 +25,7 @@ public class MyApiService{
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(logging);
 
-        String baseUrl = "http://qa-pidame.nexura.com/api/";
+        String baseUrl = "https://pasaportes.valledelcauca.gov.co/api/";
 
         if (API_SERVICE == null) {
             Retrofit retrofit = new Retrofit.Builder()

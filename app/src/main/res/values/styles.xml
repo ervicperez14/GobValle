@@ -16,6 +16,17 @@
 
 
     </style>
+
+    <style name="NoTitle2" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/azul</item>
+        <item name="android:popupBackground">@color/white</item>
+
+
+    </style>
+
+
     <style name="error_appearance" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/redError</item>
         <item name="android:textSize">12sp</item>

@@ -137,6 +137,13 @@ public class Consultar extends AppCompatActivity implements BottomNavigationView
                 startActivity(intent);
             }
             break;
+            case 4: {
+                Intent intent = new Intent(Consultar.this,WebView.class);
+                intent.putExtra("item",4);
+                startActivity(intent);
+            }
+            break;
+
         }
         return false;
 
@@ -145,10 +152,7 @@ public class Consultar extends AppCompatActivity implements BottomNavigationView
 
     @Override
     public void onBackPressed(){
-
-        Intent intent = new Intent(Consultar.this,MainActivity.class);
         finish();
-        startActivity(intent);
     }
 
 

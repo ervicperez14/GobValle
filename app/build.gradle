@@ -6,7 +6,7 @@ android {
         applicationId "com.ervic.mac.gobvalle"
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 8
+        versionCode 32
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -38,7 +38,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:11.6.2'
     implementation 'com.google.firebase:firebase-messaging:11.6.2'
     implementation 'com.github.bumptech.glide:glide:4.0.0'
-    implementation 'com.github.delight-im:Android-AdvancedWebView:v3.0.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'

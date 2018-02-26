@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -50,6 +51,7 @@ import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -211,7 +213,25 @@ public class Registrarse extends AppCompatActivity {
 
                         @Override
                         public void onFailure(Call<ResponseVerificaPago> call, Throwable t) {
-                            Snackbar.make(findViewById(R.id.btn_enviar),"El pago no se he realizado",Snackbar.LENGTH_LONG).show();
+                            //Snackbar.make(findViewById(R.id.btn_enviar),"Para realizar el respectivo registro debe haber realizado el primer pago.",Snackbar.LENGTH_LONG).show();
+                            progress_enviar.dismiss();
+                            LayoutInflater inflater = getLayoutInflater();
+                            View v = inflater.inflate(R.layout.content_mensaje, null);
+                            TextView texto_mensaje = (TextView) v.findViewById(R.id.texto_mensaje);
+                            Button btn_aceptar = (Button) v.findViewById(R.id.btn_aceptar);
+                            texto_mensaje.setText("Para realizar el respectivo registro debe haber realizado el primer pago.");
+                            final AlertDialog.Builder alert = new AlertDialog.Builder(Registrarse.this);
+                            // this is set the view from XML inside AlertDialog
+                            alert.setView(v);
+                            final AlertDialog dialog = alert.create();
+                            dialog.show();
+                            btn_aceptar.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    dialog.cancel();
+                                }
+                            });
+
                         }
 
                     });
@@ -262,9 +282,7 @@ public class Registrarse extends AppCompatActivity {
     @Override
     public void onBackPressed(){
 
-        Intent intent = new Intent(Registrarse.this,MainActivity.class);
         finish();
-        startActivity(intent);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.ervic.mac.gobvalle.Principal;
 
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
@@ -45,8 +47,9 @@ import okhttp3.Response;
 public class Solicitar extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
     private Context context = this;
     private android.webkit.WebView web_solicitar;
-    private String url = "http://qa-pidame.nexura.com/loader.php?lServicio=Pasaporte&lFuncion=createAppointment";
+    private String url = "https://pasaportes.valledelcauca.gov.co/loader.php?lServicio=Pasaporte&lFuncion=createAppointment";
     private android.webkit.WebView webView;
+    private ProgressDialog progressDialog;
     BottomNavigationView bottomNavigationView;
     private PreferenciasGobvalle my_preferences;
     private String TAG_LOGGED = "LOGGED";
@@ -60,10 +63,13 @@ public class Solicitar extends AppCompatActivity implements BottomNavigationView
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_solicitar);
         my_preferences = new PreferenciasGobvalle(this);
+        progressDialog = new ProgressDialog(this);
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomnavigationview);
         ImageView btn_back = (ImageView)findViewById(R.id.btn_back);
         web_solicitar = (android.webkit.WebView) findViewById(R.id.web_solicitar);
-
+        web_solicitar.setWebChromeClient(new WebChromeClient());
+        web_solicitar.clearCache(true);
+        progressDialog.show();
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -192,10 +198,7 @@ public class Solicitar extends AppCompatActivity implements BottomNavigationView
 
     @Override
     public void onBackPressed(){
-
-       Intent intent = new Intent(Solicitar.this,MainActivity.class);
         finish();
-        startActivity(intent);
 
     }
     private Map<String,String> getHeader()
@@ -226,8 +229,11 @@ public class Solicitar extends AppCompatActivity implements BottomNavigationView
                 return true;
             }
 
-
-
+            @Override
+            public void onPageFinished(android.webkit.WebView view, String url) {
+                super.onPageFinished(view, url);
+                progressDialog.dismiss();
+            }
         };
     }
 

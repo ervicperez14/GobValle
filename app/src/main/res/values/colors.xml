@@ -7,4 +7,11 @@
     <color name="black">#000000</color>
     <color name="azul">#08a4b5</color>
     <color name="redError">#F4364C</color>
+    <color name="colorAzul">#146B8F</color>
+    <color name="colorGris">#e2e2e2</color>
+    <color name="colorTexto">#333333</color>
+    <color name="colorTexto2">#555555</color>
+    <color name="redColor">#b5190e</color>
+    <color name="bgredColor">#e79ea5</color>
+    <color name="textredColor">#85212a</color>
 </resources>

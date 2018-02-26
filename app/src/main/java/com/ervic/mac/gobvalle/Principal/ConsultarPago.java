@@ -39,7 +39,7 @@ public class ConsultarPago extends AppCompatActivity implements BottomNavigation
     private android.webkit.WebView myWebView;
     private String TAG_LOGGED = "LOGGED";
     private PreferenciasGobvalle my_preferences;
-    private String url = "http://qa-pidame.nexura.com/loader.php?lServicio=Pasaporte&lFuncion=consult&tipo=3";
+    private String url = "https://pasaportes.valledelcauca.gov.co/loader.php?lServicio=Pasaporte&lFuncion=consult&tipo=3";
     private WebView web_pagos;
 
     @TargetApi(Build.VERSION_CODES.O)
@@ -137,6 +137,15 @@ public class ConsultarPago extends AppCompatActivity implements BottomNavigation
                 startActivity(intent);
             }
             break;
+            case 4: {
+                Intent intent = new Intent(ConsultarPago.this, com.ervic.mac.gobvalle.WebView.class);
+                intent.putExtra("item", 4);
+                intent.putExtra("url", MyApplication.getData().bottomMenu.get(4).link);
+
+                startActivity(intent);
+            }
+            break;
+
         }
         return false;
     }

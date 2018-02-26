@@ -30,11 +30,13 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingRight="5dp"
+                    android:layout_alignEnd="@+id/imageView"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignRight="@+id/imageView"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginRight="16dp"
                     android:paddingBottom="5dp"
-                    android:paddingLeft="5dp"
-                    android:paddingTop="5dp"
-                    android:orientation="horizontal"
+                    android:paddingTop="5dp">
                     >
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -49,6 +51,7 @@
                             android:layout_height="20dp"
                             android:tint="@color/white"
                             android:id="@+id/btn_back"
+                            android:contentDescription="Retroceder"
                             android:src="@drawable/ic_arrow_back_black_24dp"/>
 
                     </LinearLayout>
@@ -100,6 +103,7 @@
                     android:layout_height="70dp"
                     android:layout_gravity="center_horizontal"
                     android:background="@drawable/consultar_cita"
+                    android:contentDescription="Consultar cita"
                     android:id="@+id/consultar_cita"
                     />
                 <TextView
@@ -129,6 +133,7 @@
                     android:layout_height="70dp"
                     android:layout_gravity="center_horizontal"
                     android:background="@drawable/consultar_pagos"
+                    android:contentDescription="Consultar pago"
                     android:id="@+id/consultar_pago"
                     />
                 <TextView
@@ -164,6 +169,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
+                    android:contentDescription="Consultar estado de pasaporte"
                     android:text="Consultar estado de pasaporte"/>
 
             </LinearLayout>

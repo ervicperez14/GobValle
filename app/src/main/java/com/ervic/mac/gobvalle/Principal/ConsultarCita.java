@@ -1,23 +1,32 @@
 package com.ervic.mac.gobvalle.Principal;
 
 import android.annotation.TargetApi;
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.icu.text.IDNA;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.HttpAuthHandler;
 import android.webkit.URLUtil;
 import android.webkit.WebResourceRequest;
@@ -25,13 +34,21 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.ervic.mac.gobvalle.API.MyApiService;
 import com.ervic.mac.gobvalle.Application.MyApplication;
 import com.ervic.mac.gobvalle.BottomNavigationViewHelper;
 import com.ervic.mac.gobvalle.MainActivity;
+import com.ervic.mac.gobvalle.Models.ErrorResponse;
+import com.ervic.mac.gobvalle.Models.ResponseProcess;
 import com.ervic.mac.gobvalle.PreferenciasGobvalle;
 import com.ervic.mac.gobvalle.R;
+import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -45,18 +62,19 @@ import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 
-import im.delight.android.webview.AdvancedWebView;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 public class ConsultarCita extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
+    String prueba = "prueba";
     ImageView btn_back;
     ProgressDialog progress;
     BottomNavigationView bottomNavigationView;
-    android.webkit.WebView web_consultar;
     private String TAG_LOGGED = "LOGGED";
-    //private AdvancedWebView web_consultar;
     private PreferenciasGobvalle my_preferences;
-    private WebView myWebview;
-    private String url = "http://qa-pidame.nexura.com/loader.php?lServicio=Pasaporte&lFuncion=consult&tipo=2";
+    private EditText et_identificacion, et_fecha_pago;
+    private TextInputLayout content_numero_identificacion, content_fecha_pago;
+    private Button btn_consultar;
     @TargetApi(Build.VERSION_CODES.O)
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -64,7 +82,11 @@ public class ConsultarCita extends AppCompatActivity implements BottomNavigation
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_consultar_cita);
         my_preferences = new PreferenciasGobvalle(this);
-        web_consultar = (WebView) findViewById(R.id._webview);
+        et_identificacion = (EditText) findViewById(R.id.numero_identificacion);
+        et_fecha_pago = (EditText) findViewById(R.id.fecha_pago);
+        btn_consultar = (Button) findViewById(R.id.btn_consultar);
+        content_numero_identificacion = (TextInputLayout) findViewById(R.id.container_numero_identificacion);
+        content_fecha_pago = (TextInputLayout) findViewById(R.id.container_fecha_pago);
         progress = new ProgressDialog(this);
         btn_back = (ImageView) findViewById(R.id.btn_back);
         btn_back.setOnClickListener(new View.OnClickListener() {
@@ -79,10 +101,26 @@ public class ConsultarCita extends AppCompatActivity implements BottomNavigation
         progress.setMessage("Por favor espere ...");
         progress.setCancelable(false);
         progress.setIndeterminate(true);
-        web_consultar.getSettings().setUserAgentString("Mozilla/5.0 (Linux; Android 4.4.4; One Build/KTU84L.H4) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/33.0.0.0 Mobile Safari/537.36 [FB_IAB/FB4A;FBAV/28.0.0.20.16;]");
         progress.show();
-        //web_consultar.addHttpHeader("nx-bodycss", "app-design");
+        et_fecha_pago.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePickerDialog(et_fecha_pago);
+            }
+        });
         isLogged();
+        btn_consultar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View view = getCurrentFocus();
+                if (view != null) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
+                enviar();
+
+            }
+        });
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomnavigationview);
         final Menu menu = bottomNavigationView.getMenu();
         int i = 0;
@@ -153,6 +191,15 @@ public class ConsultarCita extends AppCompatActivity implements BottomNavigation
                 startActivity(intent);
             }
             break;
+            case 4: {
+                Intent intent = new Intent(ConsultarCita.this, com.ervic.mac.gobvalle.WebView.class);
+                intent.putExtra("item",4);
+                intent.putExtra("url",MyApplication.getData().bottomMenu.get(4).link);
+
+                startActivity(intent);
+            }
+            break;
+
         }
         return false;
     }
@@ -178,213 +225,168 @@ public class ConsultarCita extends AppCompatActivity implements BottomNavigation
     public void isLogged(){
 
         if(my_preferences.readElement(TAG_LOGGED,false)){
-            WebSettings webSettings = web_consultar.getSettings();
-            webSettings.setJavaScriptEnabled(true);
-            webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
-            web_consultar.setWebViewClient(getWebViewClient());
-            //web_consultar.addHttpHeader("nx-bodycss", "app-design");
-            //web_consultar.addHttpHeader("nx-user-identification", MyApplication.get_dataUser().getIdentificacion());
-            //web_consultar.addHttpHeader("nx-user-fecha-pago", MyApplication.get_dataUser().getPago());
-            web_consultar.loadUrl(url,getCustomHeaders());
-            cancelProgress();
+            et_fecha_pago.setText(MyApplication.get_dataUser().getPago());
+            et_identificacion.setText(MyApplication.get_dataUser().getIdentificacion());
+            Call<ResponseProcess> consulta = MyApiService.getApiService().setOptionPasaporte(MyApplication.get_dataUser().getPago(),MyApplication.get_dataUser().getIdentificacion(),"2",MyApplication.getToken());
+            consulta.enqueue(new Callback<ResponseProcess>() {
+                @Override
+                public void onResponse(Call<ResponseProcess> call, retrofit2.Response<ResponseProcess> response) {
+                    prueba = response.message();
+                    if(response.isSuccessful()) {
+                        cancelProgress();
+                        ResponseProcess datos = response.body();
+                        showMessage(datos.data.user_nombre, datos.data.user_numero_identificacion,datos.data.user_correo_electronico,datos.data.user_telefono,datos.data.fecha_cita,datos.data.hora_cita,datos.data.tipo_cita,datos.data.tipo_solicitud,datos.data.estado);
+
+                    }else {
+                        cancelProgress();
+                    }
 
 
+                }
 
+                @Override
+                public void onFailure(Call<ResponseProcess> call, Throwable t) {
+                    cancelProgress();
+                    Log.e("Error",t.getLocalizedMessage().toLowerCase());
+                    LayoutInflater inflater = getLayoutInflater();
+                    View v = inflater.inflate(R.layout.content_formulariored, null);
+                    TextView texto_mensaje = (TextView) v.findViewById(R.id.texto_mensaje);
+                    Button btn_aceptar = (Button) v.findViewById(R.id.btn_aceptar);
+                    texto_mensaje.setText("La información ingresada no coincide con ningún registro de cita agendada.");
+                    final AlertDialog.Builder alert = new AlertDialog.Builder(ConsultarCita.this);
+                    // this is set the view from XML inside AlertDialog
+                    alert.setView(v);
+                    final AlertDialog dialog = alert.create();
+                    dialog.show();
+                    btn_aceptar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.cancel();
+                        }
+                    });
+
+                }
+            });
         }else{
-            WebSettings webSettings = web_consultar.getSettings();
-            webSettings.setJavaScriptEnabled(true);
-            webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
-            web_consultar.setWebViewClient(getWebViewClient());
-           //web_consultar.addHttpHeader("nx-bodycss", "app-design");
-            web_consultar.loadUrl(url,getCustomHeaders());
             cancelProgress();
 
         }
 
     }
-    private Map<String, String> getCustomHeaders()
-    {
-        Map<String, String> headers = new HashMap<>();
-        if(my_preferences.readElement(TAG_LOGGED,false)) {
 
-            headers.put("nx-bodycss", "app-design");
-            headers.put("nx-user-identification", MyApplication.get_dataUser().getIdentificacion());
-            headers.put("nx-user-fecha-pago", MyApplication.get_dataUser().getPago());
-            return headers;
-        }else{
-            headers.put("nx-bodycss", "app-design");
-
-
-
-            return headers;
-        }
-    }
     @Override
     public void onBackPressed(){
 
        finish();
 
     }
-    private Map<String,String> getHeader()
-    {
-        Map<String,String> header = new HashMap<>();
-        header.put("nx-bodycss", "app-design");
-        return  header;
 
+    private void showDatePickerDialog(final EditText fecha) {
+        DatePickerFragment newFragment = DatePickerFragment.newInstance(new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                // +1 because january is zero
+                final String selectedDate = day + "/" + (month+1) + "/" + year;
+                fecha.setText(selectedDate);
+            }
+        });
+        newFragment.show(getFragmentManager(), "datePicker");
     }
-    private WebViewClient getWebViewClient()
-    {
+    public void showMessage(String nombre, String cedula, String email, String telefono, String fecha, String hora, String tipo_cita, String tipo_solicitud, String estado){
+        LayoutInflater inflater = getLayoutInflater();
+        View v = inflater.inflate(R.layout.content_respuesta_consulta, null);
+        TextView respuesta_nombre = (TextView) v.findViewById(R.id.respuesta_nombre);
+        TextView respuesta_cedula = (TextView) v.findViewById(R.id.respuesta_cedula);
+        TextView respuesta_email = (TextView) v.findViewById(R.id.respuesta_email);
+        TextView respuesta_telefono = (TextView) v.findViewById(R.id.respuesta_telefono);
+        TextView respuesta_fecha = (TextView) v.findViewById(R.id.respuesta_fecha);
+        TextView respuesta_hora = (TextView) v.findViewById(R.id.respuesta_hora);
+        TextView respuesta_tipo_cita = (TextView) v.findViewById(R.id.respuesta_tipo_cita);
+        TextView respuesta_tipo_solicitud = (TextView) v.findViewById(R.id.respuesta_tipo_solicitud);
+        TextView respuesta_estado = (TextView) v.findViewById(R.id.respuesta_estado);
+        Button btn_cerrar_up = (Button) v.findViewById(R.id.btn_cerrar_up);
+        Button btn_cerrar_down = (Button) v.findViewById(R.id.btn_cerrar_down);
+        respuesta_nombre.setText(Html.fromHtml("<b>Nombre: </b>"+ nombre));
+        respuesta_cedula.setText(Html.fromHtml("<b>N&uacute;mero de c&eacute;dula: </b>"+ cedula));
+        respuesta_email.setText(Html.fromHtml("<b>Email: </b>"+ email));
+        respuesta_telefono.setText(Html.fromHtml("<b>Tel&eacute;fono: </b>"+ telefono));
+        respuesta_fecha.setText(Html.fromHtml("<b>Fecha: </b>"+ fecha));
+        respuesta_hora.setText(Html.fromHtml("<b>Hora: </b>"+hora));
+        respuesta_tipo_cita.setText(Html.fromHtml("<b>Tipo de cita: </b>" +tipo_cita));
+        respuesta_tipo_solicitud.setText(Html.fromHtml("<b>Tipo de solicitud: </b>"+tipo_solicitud));
+        respuesta_estado.setText(Html.fromHtml("<b>Estado: </b>"+estado));
 
-        return new WebViewClient()
-        {
-
+        final AlertDialog.Builder alert = new AlertDialog.Builder(ConsultarCita.this);
+        // this is set the view from XML inside AlertDialog
+        alert.setView(v);
+        final AlertDialog dialog = alert.create();
+        dialog.show();
+        btn_cerrar_down.setOnClickListener(new View.OnClickListener() {
             @Override
-            @SuppressWarnings("deprecation")  // Deprecated until api 21
-            public WebResourceResponse shouldInterceptRequest(android.webkit.WebView view, String url) {
-                Uri uri = Uri.parse(url);
-
-                if (uri.toString().equalsIgnoreCase("http://qa-pidame.nexura.com/loader.php?lServicio=Pasaporte&lFuncion=consult&tipo=2")) {
-                    Log.e("RAYOS",url);
-                    return loadRequestWithHeaders(url);
-                } else {
-                    return super.shouldInterceptRequest(view, url);
-                }
+            public void onClick(View v) {
+                dialog.cancel();
             }
-
-            public WebResourceResponse shouldInterceptRequest(android.webkit.WebView view, WebResourceRequest request) {
-                Uri uri = null;
-                String myuri = null;
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                    myuri = request.getUrl().toString();
-                    uri = Uri.parse(myuri);
-                }
-                Log.e("VALOR",uri.getHost());
-                if (uri.getHost().equalsIgnoreCase("qa-pidame.nexura.com")) {
-
-                    //Log.e("RAYOS",myuri);
-                    return loadRequestWithHeaders(url);
-                } else {
-                    //Log.e("RAYOS",url);
-
-                    return super.shouldInterceptRequest(view, url);
-                }
-            }
-
-
-            private WebResourceResponse loadRequestWithHeaders(String url) {
-                try {
-                    URL urlObject = new URL(url);
-                    HttpURLConnection con = (HttpURLConnection) urlObject.openConnection();
-
-                    con.addRequestProperty("nx-bodycss", "app-design");
-
-                    String[] types = parseContentHeader(con.getContentType());
-                    return new WebResourceResponse(types[0], types[1], con.getInputStream());
-                } catch (Exception ex) {
-                    return null;
-                }
-            }
-
+        });
+        btn_cerrar_up.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onPageFinished(WebView view, String url) {
-                Log.e("URLRECIBIDO",url);
-                //view.loadUrl(url,getCustomHeaders());
-                super.onPageFinished(view, url);
+            public void onClick(View v) {
+                dialog.cancel();
             }
-            /**
-            @Override
-            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-            public boolean shouldOverrideUrlLoading(final android.webkit.WebView view, WebResourceRequest request)
-            {
-
-                        view.loadUrl(url,getHeader());
-                        Log.e("URLRECIBIDO",url);
-
-
-                //view.loadUrl(request.getUrl().toString(), getCustomHeaders());
-                return true;
-            }
-
-            @Override
-            public boolean shouldOverrideUrlLoading(final android.webkit.WebView view, final String url)
-            {
-
-
-                        view.loadUrl(url,getHeader());
-                        Log.e("",url);
-
-                return false;
-            }
-            **/
-
-
-
-        };
+        });
     }
-/**
-    public WebViewClient WebViewClient() {
-        @Override
-        public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+    public void enviar(){
+        boolean bol_identificacion = isValid(et_identificacion.getText().toString());
+        boolean bol_fecha_pago = isValid(et_fecha_pago.getText().toString());
+        content_numero_identificacion.setError(bol_identificacion ? "Este campo es obligatorio.":"Este campo es obligatorio.");
+        content_fecha_pago.setError(bol_fecha_pago ? "Este campo es obligatorio.":"Este campo es obligatorio.");
+        content_numero_identificacion.setErrorEnabled(!bol_identificacion);
+        content_fecha_pago.setErrorEnabled(!bol_fecha_pago);
 
-            try {
-                DefaultHttpClient client = new DefaultHttpClient();
-                HttpGet httpGet = new HttpGet(url);
-                httpGet.setHeader("MY-CUSTOM-HEADER", "header value");
-                httpGet.setHeader(HttpHeaders.USER_AGENT, "custom user-agent");
-                HttpResponse httpReponse = client.execute(httpGet);
+        if(bol_fecha_pago && bol_identificacion){
+            progress.show();
+            content_numero_identificacion.setErrorEnabled(false);
+            content_fecha_pago.setErrorEnabled(false);
+            Call<ResponseProcess> consulta = MyApiService.getApiService().setOptionPasaporte(et_fecha_pago.getText().toString(),et_identificacion.getText().toString(),"2",MyApplication.getToken());
+            consulta.enqueue(new Callback<ResponseProcess>() {
+                @Override
+                public void onResponse(Call<ResponseProcess> call, retrofit2.Response<ResponseProcess> response) {
+                    if(response.isSuccessful()) {
+                        cancelProgress();
+                        ResponseProcess datos = response.body();
+                        showMessage(datos.data.user_nombre, datos.data.user_numero_identificacion,datos.data.user_correo_electronico,datos.data.user_telefono,datos.data.fecha_cita,datos.data.hora_cita,datos.data.tipo_cita,datos.data.tipo_solicitud,datos.data.estado);
+                    }
 
-                Header contentType = httpReponse.getEntity().getContentType();
-                Header encoding = httpReponse.getEntity().getContentEncoding();
-                InputStream responseInputStream = httpReponse.getEntity().getContent();
 
-                String contentTypeValue = null;
-                String encodingValue = null;
-                if (contentType != null) {
-                    contentTypeValue = contentType.getValue();
                 }
-                if (encoding != null) {
-                    encodingValue = encoding.getValue();
+
+                @Override
+                public void onFailure(Call<ResponseProcess> call, Throwable t) {
+                    cancelProgress();
+                    Log.e("Error",t.getLocalizedMessage().toLowerCase());
+                    LayoutInflater inflater = getLayoutInflater();
+                    View v = inflater.inflate(R.layout.content_formulariored, null);
+                    TextView texto_mensaje = (TextView) v.findViewById(R.id.texto_mensaje);
+                    Button btn_aceptar = (Button) v.findViewById(R.id.btn_aceptar);
+                    texto_mensaje.setText("La información ingresada no coincide con ningún registro de cita agendada.");
+                    final AlertDialog.Builder alert = new AlertDialog.Builder(ConsultarCita.this);
+                    // this is set the view from XML inside AlertDialog
+                    alert.setView(v);
+                    final AlertDialog dialog = alert.create();
+                    dialog.show();
+                    btn_aceptar.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.cancel();
+                        }
+                    });
                 }
-                return new WebResourceResponse(contentTypeValue, encodingValue, responseInputStream);
-            } catch (ClientProtocolException e) {
-                //return null to tell WebView we failed to fetch it WebView should try again.
-                return null;
-            } catch (IOException e) {
-                //return null to tell WebView we failed to fetch it WebView should try again.
-                return null;
-            }
+            });
+        }{
+            cancelProgress();
         }
     }
-*/
-private boolean handleUri(final Uri uri) {
-    Log.i("URI", "Uri =" + uri);
-    final String host = uri.getHost();
-    final String scheme = uri.getScheme();
-    // Based on some condition you need to determine if you are going to load the url
-    // in your web view itself or in a browser.
-    // You can use `host` or `scheme` or any part of the `uri` to decide.
-    if (true) {
-        // Returning false means that you are going to load this url in the webView itself
-        return false;
-    } else {
-        // Returning true means that you need to handle what to do with the url
-        // e.g. open web page in a Browser
-        final Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        startActivity(intent);
-        return true;
+    private boolean isValid(String cadena){
+        int textLength = cadena.length();
+        return textLength > 0;
     }
-}
-    private String[] parseContentHeader(String contentType) {
-        String[] types = contentType.split(";");
-
-        if (types[1].startsWith("charset=")) {
-            types[1] = types[1].substring("charset=".length());
-        }
-
-        types[0] = types[0].trim();
-        types[1] = types[1].trim();
-
-        return types;
-    }
-
 }

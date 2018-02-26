@@ -5,13 +5,15 @@ package com.ervic.mac.gobvalle.Models;
  */
 
 public class ErrorResponse {
-    Error error;
+    public Error error;
 
     public static class Error {
-        Data data;
+        public String code;
+        public String message;
+        public Details details;
 
-        public static class Data {
-            String message;
+        public static class Details {
+            public String prueba;
         }
     }
 }

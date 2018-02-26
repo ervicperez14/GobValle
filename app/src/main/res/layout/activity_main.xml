@@ -29,51 +29,56 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingRight="5dp"
+                android:layout_alignEnd="@+id/imageView"
+                android:layout_alignParentTop="true"
+                android:layout_alignRight="@+id/imageView"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
                 android:paddingBottom="5dp"
-                android:paddingLeft="5dp"
-                android:paddingTop="5dp"
-                android:orientation="horizontal"
-                >
+                android:paddingTop="5dp">
                 <LinearLayout
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
                     android:id="@+id/ly_btn_back"
-                    android:visibility="gone"
-                    android:layout_marginRight="8dp">
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginRight="8dp"
+                    android:visibility="gone">
+
                     <ImageView
                         android:id="@+id/btn_back"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:layout_gravity="center"
+                        android:contentDescription="Retroceder"
+                        android:src="@drawable/ic_arrow_back_black_24dp"
                         android:tint="@color/white"
-                        android:visibility="gone"
-                        android:src="@drawable/ic_arrow_back_black_24dp" />
+                        android:visibility="gone" />
                 </LinearLayout>
+
                 <ImageView
+                    android:id="@+id/logo_horizontal"
                     android:layout_width="170dp"
-                    android:foregroundGravity="left"
-                    android:layout_gravity="start"
                     android:layout_height="35dp"
-                    android:layout_toRightOf="@+id/ly_btn_back"
-                    android:background="@drawable/logo_horizontal"
-                    android:id="@+id/logo_horizontal"/>
-            <LinearLayout
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:id="@+id/ly_opcion"
-                android:layout_marginRight="8dp">
-                <ImageView
-                    android:id="@+id/opcion"
-                    android:layout_width="25dp"
-                    android:layout_height="8dp"
-                    android:layout_gravity="center"
-                    android:background="@drawable/ico_menu" />
-            </LinearLayout>
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/logo_horizontal" />
+
+                <LinearLayout
+                    android:id="@+id/ly_opcion"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="8dp">
+
+                    <ImageView
+                        android:id="@+id/opcion"
+                        android:layout_width="25dp"
+                        android:layout_height="8dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/ico_menu"
+                        android:contentDescription="Desplegar más opciones" />
+                </LinearLayout>
             </RelativeLayout>
         </android.support.v7.widget.Toolbar>
 
@@ -84,6 +89,7 @@
         android:layout_height="fill_parent"
         android:layout_marginTop="15dp"
         android:orientation="vertical"
+        android:id="@+id/container_principal"
         android:layout_below="@+id/app_bar"
         >
         <TextView
@@ -114,6 +120,7 @@
                     android:layout_height="70dp"
                     android:layout_gravity="center_horizontal"
                     android:background="@drawable/icono_pagos"
+                    android:contentDescription="Realizar Pago"
                     android:id="@+id/pagos"
                     />
                 <TextView
@@ -135,6 +142,7 @@
                     android:layout_height="70dp"
                     android:layout_gravity="center_horizontal"
                     android:background="@drawable/icono_registro"
+                    android:contentDescription="Regístrese"
                     android:id="@+id/registrarse"
                     />
                 <TextView
@@ -164,13 +172,14 @@
                     android:layout_height="70dp"
                     android:layout_gravity="center_horizontal"
                     android:background="@drawable/icono_reloj"
+                    android:contentDescription="Solicitar cita"
                     android:id="@+id/solicitar"
                     />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:text="Solicitar"/>
+                    android:text="Solicitar cita"/>
 
             </LinearLayout>
 
@@ -184,6 +193,7 @@
                     android:layout_height="70dp"
                     android:layout_gravity="center_horizontal"
                     android:background="@drawable/icono_buscar"
+                    android:contentDescription="Consultar"
                     android:id="@+id/consultar"
                     />
                 <TextView
@@ -213,13 +223,15 @@
                     android:layout_height="70dp"
                     android:layout_gravity="center_horizontal"
                     android:background="@drawable/icono_cancelar"
+                    android:contentDescription="Cancelar cita"
                     android:id="@+id/cancelar"
                     />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:text="Cancelar"/>
+                    android:gravity="center_horizontal"
+                    android:text="Cancelar \ncita"/>
 
             </LinearLayout>
 
@@ -233,13 +245,15 @@
                     android:layout_height="70dp"
                     android:layout_gravity="center_horizontal"
                     android:background="@drawable/icono_reagendar"
+                    android:contentDescription="Reprogramar cita"
                     android:id="@+id/reprogramar"
                     />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:text="Reprogramar"/>
+                    android:gravity="center_horizontal"
+                    android:text="Reprogramar \ncita"/>
             </LinearLayout>
 
         </RelativeLayout>
@@ -329,7 +343,8 @@
         android:layout_marginBottom="10dp"
         android:scaleType="centerCrop"
         android:background="@drawable/gobernacion_valle_logo"
-        android:layout_above="@+id/bottomnavigationview"/>
+        android:layout_above="@+id/bottomnavigationview"
+        android:id="@+id/imageView" />
 
     <android.support.design.widget.BottomNavigationView
         android:layout_width="match_parent"

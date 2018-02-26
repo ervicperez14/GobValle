@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 
 import com.ervic.mac.gobvalle.Application.MyApplication;
@@ -40,7 +41,7 @@ public class Pagos extends AppCompatActivity implements BottomNavigationView.OnN
         WebView webViewPago = (WebView)findViewById(R.id._webview);
         webViewPago.getSettings().setJavaScriptEnabled(true);
         webViewPago.loadUrl("https://www.abcpagos.com/pasaportes_valle/");
-
+        webViewPago.setWebViewClient(new WebViewClient());
         final Menu menu = bottomNavigationView.getMenu();
         int i = 0;
 
@@ -120,9 +121,7 @@ public class Pagos extends AppCompatActivity implements BottomNavigationView.OnN
     @Override
     public void onBackPressed(){
 
-        Intent intent = new Intent(Pagos.this,MainActivity.class);
         finish();
-        startActivity(intent);
     }
 
 }

@@ -2,10 +2,12 @@ package com.ervic.mac.gobvalle;
 
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
@@ -16,8 +18,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
+import android.webkit.WebSettings;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -36,17 +41,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.util.Base64;
+import android.widget.Toast;
 
 import org.apache.http.client.ClientProtocolException;
 
 public class WebView extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
+    private final static int FILECHOOSER_RESULTCODE=1;
     ImageView btn_back;
     ProgressDialog progress;
-
+    private ValueCallback<Uri> mUploadMessage;
+    public ValueCallback<Uri[]> uploadMessage;
     BottomNavigationView bottomNavigationView;
     android.webkit.WebView myWebView;
     @TargetApi(Build.VERSION_CODES.O)
     @RequiresApi(api = Build.VERSION_CODES.O)
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,13 +73,9 @@ public class WebView extends AppCompatActivity implements BottomNavigationView.O
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(WebView.this,MainActivity.class);
                 finish();
-                startActivity(intent);
             }
         });
-
-
 
         progress.setTitle("Cargando");
         progress.setMessage("Por favor espere ...");
@@ -78,12 +85,91 @@ public class WebView extends AppCompatActivity implements BottomNavigationView.O
         myWebView.setWebViewClient(getWebViewClient());
         myWebView.loadUrl(url,getCustomHeaders());
         myWebView.getSettings().setJavaScriptEnabled(true);
+        WebSettings mWebSettings = myWebView.getSettings();
+        mWebSettings.setAllowFileAccess(true);
+        mWebSettings.setAllowFileAccess(true);
+        mWebSettings.setAllowContentAccess(true);
+        myWebView.setWebChromeClient(new WebChromeClient()
+        {
+            //The undocumented magic method override
+            //Eclipse will swear at you if you try to put @Override here
+            // For Android 3.0+
+            public void openFileChooser(ValueCallback<Uri> uploadMsg) {
+
+                mUploadMessage = uploadMsg;
+                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                i.addCategory(Intent.CATEGORY_OPENABLE);
+                i.setType("image/*");
+                try {
+                    WebView.this.startActivityForResult(Intent.createChooser(i, "Selecionar archivo"), FILECHOOSER_RESULTCODE);
+                }catch (ActivityNotFoundException e){
+                    Toast.makeText(getApplicationContext(), "Ocurrío un error al abrir la gelería", Toast.LENGTH_LONG).show();
+                    mUploadMessage = null;
+
+                }
+            }
+
+            // For Android 3.0+
+            public void openFileChooser( ValueCallback uploadMsg, String acceptType ) {
+                mUploadMessage = uploadMsg;
+                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                i.addCategory(Intent.CATEGORY_OPENABLE);
+                i.setType("*/*");
+                try {
+                    WebView.this.startActivityForResult(Intent.createChooser(i, "Selecionar archivo"), FILECHOOSER_RESULTCODE);
+                }catch (ActivityNotFoundException e){
+                    Toast.makeText(getApplicationContext(), "Ocurrío un error al abrir la gelería", Toast.LENGTH_LONG).show();
+                    mUploadMessage = null;
+
+                }
+            }
+
+            //For Android 4.1
+            public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture){
+                mUploadMessage = uploadMsg;
+                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                i.addCategory(Intent.CATEGORY_OPENABLE);
+                i.setType("image/*");
+
+                try {
+                    WebView.this.startActivityForResult(Intent.createChooser(i, "Selecionar archivo"), FILECHOOSER_RESULTCODE);
+                }catch (ActivityNotFoundException e){
+                    Toast.makeText(getApplicationContext(), "Ocurrío un error al abrir la gelería", Toast.LENGTH_LONG).show();
+                    mUploadMessage = null;
+
+                }
+            }
+
+            public boolean onShowFileChooser(android.webkit.WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
+                uploadMessage = filePathCallback;
+                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                i.addCategory(Intent.CATEGORY_OPENABLE);
+                i.setType("image/*");
+                try {
+                    WebView.this.startActivityForResult(Intent.createChooser(i, "Seleccionar archivo"), FILECHOOSER_RESULTCODE);
+                }catch (ActivityNotFoundException e){
+                    Toast.makeText(getApplicationContext(), "Ocurrío un error al abrir la gelería", Toast.LENGTH_LONG).show();
+                    uploadMessage = null;
+                    return false;
+                }
+                return true;
+            }
+
+
+
+        });
+
         cancelProgress();
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // chromium, enable hardware acceleration
+            myWebView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        } else {
+            // older android version, disable hardware acceleration
+            myWebView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        }
         final Menu menu = bottomNavigationView.getMenu();
-        int i = 0;
 
-        for(i = 0;i < MyApplication.getData().bottomMenu.size();i++) {
+        for(int i = 0;i < MyApplication.getData().bottomMenu.size();i++) {
             final int aux = i;
             Log.e("ENTRO",MyApplication.getData().bottomMenu.get(aux).title);
             Picasso.with(this).load(MyApplication.getData().bottomMenu.get(i).icon).placeholder(getResources().getDrawable(R.drawable.ic_launcher_background)).into(new com.squareup.picasso.Target() {
@@ -93,17 +179,10 @@ public class WebView extends AppCompatActivity implements BottomNavigationView.O
                     menu.add(Menu.NONE, aux, Menu.NONE, MyApplication.getData().bottomMenu.get(aux).title).setIcon(drawable).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
                     Log.e("ENTRO",MyApplication.getData().bottomMenu.get(aux).title);
                 }
-
                 @Override
-                public void onBitmapFailed(Drawable errorDrawable) {
-
-                }
-
+                public void onBitmapFailed(Drawable errorDrawable) {}
                 @Override
-                public void onPrepareLoad(Drawable placeHolderDrawable) {
-                    //menu.add(Menu.NONE, aux, Menu.NONE, MyApplication.getData().bottomMenu.get(aux).title).setIcon(placeHolderDrawable).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-                    //Log.e("ENTRO",MyApplication.getData().bottomMenu.get(aux).title);
-                }
+                public void onPrepareLoad(Drawable placeHolderDrawable) {}
             });
         }
         bottomNavigationView.invalidate();
@@ -111,8 +190,7 @@ public class WebView extends AppCompatActivity implements BottomNavigationView.O
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         bottomNavigationView.getMenu().getItem(item).setChecked(true);
 
-
-
+        //setContentView(myWebView);
     }
 
     @Override
@@ -120,7 +198,7 @@ public class WebView extends AppCompatActivity implements BottomNavigationView.O
         // uncheck the other items.
         int mMenuId = item.getItemId();
         for (int i = 0; i < bottomNavigationView.getMenu().size(); i++) {
-                MenuItem menuItem = bottomNavigationView.getMenu().getItem(item.getItemId()).setChecked(true);
+            MenuItem menuItem = bottomNavigationView.getMenu().getItem(item.getItemId()).setChecked(true);
 
         }
 
@@ -150,6 +228,14 @@ public class WebView extends AppCompatActivity implements BottomNavigationView.O
 
             }
             break;
+            case 4: {
+                String url = MyApplication.getData().bottomMenu.get(4).link;
+                myWebView.getSettings().setJavaScriptEnabled(true);
+                myWebView.loadUrl(url,getCustomHeaders());
+
+            }
+            break;
+
         }
         return false;
     }
@@ -175,16 +261,14 @@ public class WebView extends AppCompatActivity implements BottomNavigationView.O
     private Map<String, String> getCustomHeaders()
     {
         Map<String, String> headers = new HashMap<>();
-            headers.put("nx-bodycss", "app-design");
-            return headers;
+        headers.put("nx-bodycss", "app-design");
+        return headers;
 
     }
     @Override
     public void onBackPressed(){
 
-        Intent intent = new Intent(WebView.this,MainActivity.class);
         finish();
-        startActivity(intent);
     }
     private WebViewClient getWebViewClient()
     {
@@ -207,7 +291,30 @@ public class WebView extends AppCompatActivity implements BottomNavigationView.O
                 view.loadUrl(url, getCustomHeaders());
                 return true;
             }
+
+            @Override
+            public void onPageFinished(android.webkit.WebView view, String url) {
+                super.onPageFinished(view, url);
+                progress.cancel();
+            }
         };
     }
-
+    @TargetApi(21)
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode,
+                                    Intent intent) {
+        if(requestCode==FILECHOOSER_RESULTCODE)
+        {
+            if (null != mUploadMessage) {
+                Uri result = intent == null || resultCode != RESULT_OK ? null : intent.getData();
+                mUploadMessage.onReceiveValue(result);
+                mUploadMessage = null;
+            }else if (null != uploadMessage) {
+                uploadMessage.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(resultCode, intent));
+                uploadMessage = null;
+            }else{
+                return;
+            }
+        }
+    }
 }

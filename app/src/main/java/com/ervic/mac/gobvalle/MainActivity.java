@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
@@ -91,6 +92,9 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
     private String tokenFirebaseNotification;
+    Context context = this;
+    public static final int READ_STORAGE_PERMISSION_REQUEST_CODE = 1;
+    private EditText fecha_pago;
     final int callbackId = 42;
     private String TAG_ID ="ID";
     private String TAG_EMAIL = "EMAIL";
@@ -112,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private Animation animation;
     private ImageView btn_opcion;
     private LinearLayout ly_opcion, ly_btn_back;
-    private LinearLayout container_recycler, container_recycler_scareservices;
+    private LinearLayout container_recycler, container_recycler_scareservices, container_principal;
     private RecyclerView mRecycler,mRecycler_care;
     private AdapterInformacion mAdapter;
     private AdaptercareServices mAdapter_care;
@@ -129,11 +133,17 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        if(!checkPermissionForReadExtertalStorage()) try {
+            requestPermissionForReadExtertalStorage();
+        } catch (Exception e) {
+
+        }
         btn_opcion = (ImageView)  findViewById(R.id.opcion);
         ly_opcion = (LinearLayout) findViewById(R.id.ly_opcion);
         ly_btn_back = (LinearLayout) findViewById(R.id.ly_btn_back);
         container_recycler = (LinearLayout) findViewById(R.id.container_recycler);
         container_recycler_scareservices = (LinearLayout) findViewById(R.id.container_scareservices);
+        container_principal = (LinearLayout)findViewById(R.id.container_principal);
         AppBarLayout appBar = (AppBarLayout) findViewById(R.id.app_bar);
         PopupMenu popup = new PopupMenu(appBar.getContext(), toolbar);
        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomnavigationview);
@@ -244,6 +254,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             @Override
             public void onClick(View v) {
                 if(container_recycler.getVisibility() == View.GONE){
+                    container_principal.setVisibility(View.INVISIBLE);
                     showleftMenu();
                     showArrorBack();
                     hideBtnleftMenu();
@@ -258,6 +269,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             @Override
             public void onClick(View v) {
                 if(container_recycler.getVisibility() == View.GONE){
+                    container_principal.setVisibility(View.INVISIBLE);
                     showleftMenu();
                     showArrorBack();
                     hideBtnleftMenu();
@@ -324,16 +336,20 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                                     tv_fecha_pago.setText(Html.fromHtml("<b>Fecha de pago:</b> "+ MyApplication.get_dataUser().getPago()));
                                     tv_telefono.setText(Html.fromHtml("<b>Teléfono:</b> "+MyApplication.get_dataUser().getTelefono()));
                                     showlayoutPerfil();
+                                    container_recycler.setVisibility(View.INVISIBLE);
                                 }else{
                                     Log.e("OPEN LOGIN","TRUE");
                                     openLogin();
 
                                 }
                             }else if(position == 1){
-                                if(container_recycler_scareservices.getVisibility() == View.GONE)
+                                if(container_recycler_scareservices.getVisibility() == View.GONE) {
+                                    container_recycler.setVisibility(View.INVISIBLE);
                                     showcareServicesMenu();
-                                else{
+                                }else {
+                                    container_recycler.setVisibility(View.VISIBLE);
                                     hidecareServicesMenu();
+
                                 }
 
                             }else if(position == (MyApplication.getData().leftMenu.size()+2)){
@@ -426,12 +442,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             @Override
             public void onClick(View v) {
                 if(container_recycler_scareservices.getVisibility() == View.VISIBLE){
+                    container_recycler.setVisibility(View.VISIBLE);
                     hidecareServicesMenu();
                 }else if(layout_perfil.getVisibility() == View.VISIBLE){
+                    container_recycler.setVisibility(View.VISIBLE);
                     hidelayoutPerfil();
 
                 }else if(container_recycler.getVisibility() == View.VISIBLE) {
-
+                    container_principal.setVisibility(View.VISIBLE);
                     hideleftMenu();
                     showBtnleftMenu();
                     hideArrorBack();
@@ -560,18 +578,22 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         if(container_recycler_scareservices.getVisibility() == View.VISIBLE){
             hidecareServicesMenu();
-
+            container_recycler.setVisibility(View.VISIBLE);
 
         }else if(layout_perfil.getVisibility() == View.VISIBLE){
+            container_recycler.setVisibility(View.VISIBLE);
             hidelayoutPerfil();
 
         }else if(container_recycler.getVisibility() == View.VISIBLE){
+            container_principal.setVisibility(View.VISIBLE);
             hideleftMenu();
 
             showBtnleftMenu();
             hideArrorBack();
             //btn_opcion.setVisibility(View.VISIBLE);
             //ly_opcion.setVisibility(View.VISIBLE);
+        }else{
+            super.onBackPressed();
         }
 
     }
@@ -584,13 +606,22 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
 
     }
-    private void showDatePickerDialog(final EditText fecha) {
+    private void showDatePickerDialog() {
         DatePickerFragment newFragment = DatePickerFragment.newInstance(new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 // +1 because january is zero
-                final String selectedDate = day + "/" + (month+1) + "/" + year;
-                fecha.setText(selectedDate);
+                //Correcciones
+                String dia = String.valueOf(day);
+                String mes = String.valueOf(month+1);
+                String año = String.valueOf(year);
+
+                if(dia.length()<2)
+                    dia = "0"+dia;
+                if(mes.length()<2)
+                    mes = "0"+mes;
+                final String selectedDate = dia + "/" + (mes) + "/" + año;
+                fecha_pago.setText(selectedDate);
             }
         });
         newFragment.show(getFragmentManager(), "datePicker");
@@ -605,7 +636,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         View v = inflater.inflate(R.layout.content_login, null);
 
         final EditText identificacion = (EditText)v.findViewById(R.id.login_numid);
-        final EditText fecha_pago = (EditText)v.findViewById(R.id.login_fechapago);
+        fecha_pago = (EditText)v.findViewById(R.id.login_fechapago);
         final TextInputLayout containerid = (TextInputLayout)v.findViewById(R.id.container_numid_login);
         final TextInputLayout containerfechapago = (TextInputLayout)v.findViewById(R.id.container_fechapago_login);
         container_button_login = (TextInputLayout) v.findViewById(R.id.container_button_login);
@@ -620,7 +651,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         fecha_pago.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDatePickerDialog(fecha_pago);
+                showDatePickerDialog();
             }
         });
 
@@ -749,6 +780,21 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         btn_opcion.setVisibility(View.GONE);
         ly_opcion.setVisibility(View.GONE);
     }
-
+    public boolean checkPermissionForReadExtertalStorage() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            int result = checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE);
+            return result == PackageManager.PERMISSION_GRANTED;
+        }
+        return false;
+    }
+    public void requestPermissionForReadExtertalStorage() throws Exception {
+        try {
+            ActivityCompat.requestPermissions((Activity) context, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
+                    READ_STORAGE_PERMISSION_REQUEST_CODE);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
 
 }

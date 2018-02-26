@@ -76,7 +76,6 @@ public class SplashActivity extends AppCompatActivity {
                 MyApplication.getData().setCareServicesMenu(res.data.getCareServicesMenu());
                 //Log.e("CARESERVICESMENU",MyApplication.getData().careServicesMenu.get(0).title);
                 getToken();
-
             }else{
 
             }
@@ -93,7 +92,7 @@ public class SplashActivity extends AppCompatActivity {
                         Log.e("ResponseMenu", menus);
                         MyApplication.setData(response.body().data);
                         my_preferences.savejsonString(TAG_DATA_MENU, menus);
-                        my_preferences.saveElement(TAG_MENU, true);
+                        //my_preferences.saveElement(TAG_MENU, true);
                         getToken();
 
                     } else {
@@ -210,7 +209,7 @@ public class SplashActivity extends AppCompatActivity {
         }else{
             **/
             Log.e(TAG_TOKEN,"NO");
-            Call<ResponseToken> token = MyApiService.getApiService().getTokenSystem("pasaporte-app","Pasaporte#2016Nx");
+            Call<ResponseToken> token = MyApiService.getApiService().getTokenSystem("pasaporte-app","Nexura#2018");
             token.enqueue(new Callback<ResponseToken>() {
                 @Override
                 public void onResponse(Call<ResponseToken> call, Response<ResponseToken> response) {
@@ -259,6 +258,7 @@ public class SplashActivity extends AppCompatActivity {
                 } finally {
 
                     Intent intent = new Intent(SplashActivity.this,MainActivity.class);
+                    finish();
                     startActivity(intent);
                 }
             }
